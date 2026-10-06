@@ -74,6 +74,26 @@ def bp(x, f1, f2, order=2):
     return signal.sosfilt(sos, x)
 
 
+def biquad(x, kind, f0, gain_db=0.0, q=0.707):
+    """EQ estilo RBJ cookbook: 'peak', 'lowshelf', 'highshelf'"""
+    A = 10 ** (gain_db / 40)
+    w0 = 2 * np.pi * f0 / SR
+    cw, sw = np.cos(w0), np.sin(w0)
+    alpha = sw / (2 * q)
+    if kind == 'peak':
+        bb = [1 + alpha * A, -2 * cw, 1 - alpha * A]
+        aa = [1 + alpha / A, -2 * cw, 1 - alpha / A]
+    elif kind == 'lowshelf':
+        sa = 2 * np.sqrt(A) * alpha
+        bb = [A * ((A + 1) - (A - 1) * cw + sa), 2 * A * ((A - 1) - (A + 1) * cw), A * ((A + 1) - (A - 1) * cw - sa)]
+        aa = [(A + 1) + (A - 1) * cw + sa, -2 * ((A - 1) + (A + 1) * cw), (A + 1) + (A - 1) * cw - sa]
+    else:
+        sa = 2 * np.sqrt(A) * alpha
+        bb = [A * ((A + 1) + (A - 1) * cw + sa), -2 * A * ((A - 1) + (A + 1) * cw), A * ((A + 1) + (A - 1) * cw - sa)]
+        aa = [(A + 1) - (A - 1) * cw + sa, 2 * ((A - 1) - (A + 1) * cw), (A + 1) - (A - 1) * cw - sa]
+    return signal.lfilter(np.array(bb) / aa[0], np.array(aa) / aa[0], x)
+
+
 def env_exp(n, decay):
     return np.exp(-np.arange(n) / SR / decay)
 
@@ -191,7 +211,7 @@ def crash(d=2.2):
 
 def impact(size=1.0, d=1.8):
     t = tt(d)
-    sub = sine(28 + 70 * np.exp(-t / 0.12), d) * np.exp(-t / (0.5 * size + 0.2))
+    sub = sine(40 + 70 * np.exp(-t / 0.12), d) * np.exp(-t / (0.45 * size + 0.18))
     thump = lp(noise(d), 300) * np.exp(-t / 0.08) * 2.5
     crack = hp(noise(d), 1200) * np.exp(-t / 0.05) * 0.7
     x = np.tanh((sub * 1.4 + thump + crack) * 1.3)
@@ -288,7 +308,7 @@ def pluck(freq, d=0.22, cutoff=3200):
 
 
 def sub_note(freq, d):
-    x = sine(freq, d) + 0.25 * np.tanh(3 * sine(freq * 2, d))
+    x = sine(freq, d) + 0.45 * np.tanh(3 * sine(freq * 2, d)) + 0.18 * np.tanh(2 * sine(freq * 3, d))
     return x * adsr(len(x), a=0.004, d=0.05, s=0.9, r=0.03) * 0.6
 
 
@@ -389,7 +409,7 @@ verb_send.add(impact(1.5, 2.4), b(16), 0.3)
 drums.add(crash(), b(16), 0.7)
 for chord, s0 in prog:
     notes = [n2f(n) for n in CH[chord]]
-    music.add(supersaw(notes, b(4), cutoff=2200 if s0 < 24 else 3000) * adsr(int(b(4) * SR), 0.01, 0.2, 0.85, 0.05), b(s0), 0.42)
+    music.add(supersaw(notes, b(4), cutoff=2400 if s0 < 24 else 3200) * adsr(int(b(4) * SR), 0.01, 0.2, 0.85, 0.05), b(s0), 0.5)
     verb_send.add(supersaw(notes, b(4), cutoff=1600), b(s0), 0.06)
     # sub-baixo nas colcheias (com oitava)
     for k in np.arange(s0, s0 + 4, 0.5):
@@ -411,7 +431,7 @@ arp_notes = {'C': ['C5', 'E5', 'G5', 'E5'], 'G': ['G4', 'B4', 'D5', 'B4'], 'Am':
 for chord, s0 in prog[2:]:
     for i, k in enumerate(np.arange(s0, s0 + 4, 0.25)):
         nn = arp_notes[chord][i % 4]
-        music.add(pluck(n2f(nn) * (2 if (i // 4) % 2 else 1), 0.2), b(k), 0.13, pan=0.4 * np.sin(i * 0.8))
+        music.add(pluck(n2f(nn) * (2 if (i // 4) % 2 else 1), 0.2), b(k), 0.16, pan=0.4 * np.sin(i * 0.8))
 # barras subindo (blips ascendentes)
 for i in range(12):
     sfx.add(blip(n2f('A5') * 2 ** (i / 12 * 1.5), 0.08), b(16.6) + i * 0.05, 0.18, pan=-0.6 + i * 0.1)
@@ -486,7 +506,7 @@ drums.add(crash(), b(56), 0.7)
 cta_prog = [('Am', 56), ('F', 58), ('C', 60), ('G', 62)]
 for chord, s0 in cta_prog:
     notes = [n2f(n) for n in CH[chord]]
-    music.add(supersaw(notes, b(2), cutoff=3600) * adsr(int(b(2) * SR), 0.01, 0.2, 0.85, 0.05), b(s0), 0.42)
+    music.add(supersaw(notes, b(2), cutoff=3800) * adsr(int(b(2) * SR), 0.01, 0.2, 0.85, 0.05), b(s0), 0.5)
     verb_send.add(supersaw(notes, b(2), cutoff=2000), b(s0), 0.06)
     for k in np.arange(s0, s0 + 2, 0.5):
         f = n2f(ROOT[chord]) * (2 if (k * 2) % 4 == 3 else 1)
@@ -547,9 +567,13 @@ mix += sfx.stereo() * 0.8
 mix += np.stack([vL, vR]) * 0.55 * (0.55 + 0.45 * sc)
 
 # master: HPF/LPF, saturação suave, normalização por TRUE PEAK (-1 dBTP, 4× oversampling)
-mix = hp(mix, 25)
+mix = hp(mix, 34, 4)
+mix = biquad(mix, 'lowshelf', 75, -4.0, 0.7)
+mix = biquad(mix, 'peak', 320, 1.5, 0.9)
+mix = biquad(mix, 'peak', 2800, 3.0, 0.8)
+mix = biquad(mix, 'highshelf', 9000, 1.5, 0.7)
 mix = lp(mix, 16500, 4)
-mix = np.tanh(mix * 1.15) / np.tanh(1.15)
+mix = np.tanh(mix * 1.6) / np.tanh(1.6)
 mix = lp(mix, 17500, 4)
 over = signal.resample_poly(mix, 4, 1, axis=1)
 tpk = np.max(np.abs(over))
