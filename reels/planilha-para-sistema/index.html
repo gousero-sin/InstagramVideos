@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planilha → Sistema · @gouserodev</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; color: #cfd8d3; font: 13px/1.4 ui-monospace, monospace; }
+  canvas { display: block; }
+  body.preview { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+  body.preview canvas { box-shadow: 0 0 0 1px #1c2420, 0 20px 80px rgba(57,255,20,.08); border-radius: 6px; }
+  .ui { display: flex; align-items: center; gap: 10px; width: min(560px, 92vw); }
+  .ui button { background: #39ff14; color: #041004; border: 0; border-radius: 4px; padding: 6px 12px; font-weight: 700; cursor: pointer; }
+  .ui input { flex: 1; accent-color: #39ff14; }
+  .ui #title { opacity: .5; white-space: nowrap; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "../../node_modules/three/build/three.module.js", "three/addons/": "../../node_modules/three/examples/jsm/" } }
+</script>
+</head>
+<body>
+<canvas></canvas>
+<script type="module" src="./main.js"></script>
+</body>
+</html>

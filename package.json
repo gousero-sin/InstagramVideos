@@ -1,0 +1,19 @@
+{
+  "name": "instagram-videos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Reels em motion 3D para @gouserodev — renderizados com Three.js + Chromium headless + ffmpeg",
+  "type": "module",
+  "scripts": {
+    "dev": "node tools/serve.mjs",
+    "audio": "python3 reels/planilha-para-sistema/audio/soundtrack.py",
+    "render": "node tools/render.mjs reels/planilha-para-sistema"
+  },
+  "dependencies": {
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.1",
+    "ws": "^8.22.0"
+  }
+}
