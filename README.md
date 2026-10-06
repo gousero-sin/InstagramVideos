@@ -7,11 +7,14 @@ Chromium headless → ffmpeg. A trilha e o sound design também foram sintetizad
 
 ## 🎬 Reel #1 — “Planilha → Sistema” (30 s · 9:16 · 1080×1920)
 
+![storyboard](reels/planilha-para-sistema/out/storyboard.jpg)
+
 | Arquivo | Para quê |
 |---|---|
-| `reels/planilha-para-sistema/out/planilha-para-sistema-30fps.mp4` | **Postar no Reels** (30 fps com motion blur real de 2 sub-quadros) |
-| `reels/planilha-para-sistema/out/planilha-para-sistema-60fps.mp4` | Master 60 fps (ultra fluido) |
+| `reels/planilha-para-sistema/out/planilha-para-sistema-30fps.mp4` | **Postar no Reels** — 30 fps com motion blur real de 2 sub-quadros (47 MB, 12 Mbps, AAC 320k) |
+| `reels/planilha-para-sistema/out/planilha-para-sistema-60fps.mp4` | Master 60 fps, ultra fluido (49 MB) |
 | `reels/planilha-para-sistema/out/capa.png` | Capa do Reels (o gancho “SUA EMPRESA AINDA RODA EM PLANILHA?”) |
+| `reels/planilha-para-sistema/out/storyboard.jpg` | Storyboard com os 14 momentos-chave |
 | `reels/planilha-para-sistema/audio/soundtrack.wav` | Trilha original (128 BPM, loop perfeito, -1 dBTP) |
 
 ### A ideia (feita para virar cliente)
@@ -32,7 +35,7 @@ vira a chave no *drop* e entrega a solução — com o seu @ e um CTA de palavra
 | 11,25 s | B24 | **Cidade de dados** | Voo rasante a ~40 u/s entre torres (janelas = dados), pacotes de luz, métricas flutuando: **“SEUS NÚMEROS / EM TEMPO REAL.”** |
 | 13,1 s | B28 | | Curva chicote de 90° + **“ZERO / RETRABALHO.”** (callback da dor) |
 | 15 s | B32 | **Serviços** | Elevador vertical por 4 pódios, troca no beat: **SISTEMAS WEB** (app explodido) · **CRM DE VENDAS** (kanban fechando negócios) · **AUTOMAÇÃO + IA** (esfera neural) · **SITES & APPS** (celular 3D + notificações) |
-| 22,5 s | B48 | **Deploy** | Terminal de vidro: `npx criar-sistema` → planilhas importadas ✓ … → **✔ SISTEMA NO AR** |
+| 22,5 s | B48 | **Deploy** | **“IMPORTO SUAS PLANILHAS / E COLOCO TUDO NO AR.”** + terminal de vidro: `npx criar-sistema` → planilhas importadas ✓ … → **✔ SISTEMA NO AR** |
 | 24,8 s | B53 | | **“~~DO CAOS~~ / AO CONTROLE.”** → zoom **através do “O”** para a cena final |
 | 26,25 s | B56 | **CTA** | **@gouserodev** em cromo 3D (letras voando), marca `</>`, halo · **“BORA TIRAR SUA EMPRESA DA PLANILHA?”** · botão **MANDA “SISTEMA” NO DIRECT** é clicado → balão de DM enviado |
 | 29,8 s | B63.5 | Loop | Flash branco que emenda no slam inicial — o Reels repete sem costura (mais retenção) |
