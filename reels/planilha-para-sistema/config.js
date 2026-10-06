@@ -54,6 +54,7 @@ export const COPY = {
     { title: 'AUTOMAÇÃO + IA', sub: 'processos no piloto automático' },
     { title: 'SITES & APPS', sub: 'rápidos, modernos, que vendem' },
   ],
+  deploy: ['IMPORTO SUAS PLANILHAS', 'E COLOCO TUDO NO AR.'],
   control: ['DO CAOS', 'AO CONTROLE.'],
   ctaKicker: ['BORA TIRAR SUA EMPRESA', 'DA PLANILHA?'],
   ctaButton: 'MANDA “SISTEMA” NO DIRECT',

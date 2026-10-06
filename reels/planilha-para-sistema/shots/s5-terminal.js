@@ -27,7 +27,7 @@ function poseAt(t) {
   const el = lerp(-0.18, 0.03, a);
   const d = lerp(8.4, 10.6, ease.inOutSine(clamp(invLerp(B(48), B(53), t)))) - 0.9 * pulse(t, T_DONE, 4);
   const push = ease.inQuad(clamp(invLerp(B(53), B(56), t)));
-  const target = new THREE.Vector3(0, 0.15, 0);
+  const target = new THREE.Vector3(0, 0.5, 0);
   const pos = new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)).multiplyScalar(d + 4 * push).add(target);
   pos.x += fbm1(t * 0.7, 51) * 0.1;
   pos.y += fbm1(t * 0.6, 52) * 0.06;
@@ -97,7 +97,16 @@ export class ShotTerminal extends Shot {
     this.ctrl.position.set(0, 60, 0);
     // centro do "O" de CONTROLE (glifo 4: A,O,C,O → usa o primeiro O de CONTROLE)
     this.oGlyph = this.ctrl.glyphs.find((gg, i) => gg.userData.char === 'O' && i > 1) || this.ctrl.glyphs[1];
-    this.hud.add(this.caos, this.strike, this.ctrl);
+    // legenda do processo (responde a objeção "meus dados estão todos em planilha")
+    const lshadow = { blur: 30, color: 'rgba(0,0,0,0.92)' };
+    this.d1 = glyphs(COPY.deploy[0], S.hook, { shadow: lshadow, pad: 40, size: 104 });
+    this.d2 = glyphs(COPY.deploy[1], S.hook, { shadow: lshadow, pad: 40, size: 104, color: C.green });
+    const dfit = Math.min(1, 930 / Math.max(this.d1.w, this.d2.w));
+    this.d1.scale.setScalar(dfit);
+    this.d2.scale.setScalar(dfit);
+    this.d1.position.set(0, 700, 0);
+    this.d2.position.set(0, 596, 0);
+    this.hud.add(this.caos, this.strike, this.ctrl, this.d1, this.d2);
   }
 
   drawTerminal(ctx, st, w, h) {
@@ -223,6 +232,15 @@ export class ShotTerminal extends Shot {
     // some no início da transição pelo "O" (o CTA já está sendo desenhado por baixo)
     const hide = t >= B(55.5);
     this.scene.visible = !hide;
+
+    // ── HUD: legenda do deploy ──
+    riseGlyphs(this.d1, t, B(48.5), { dur: 0.42, stagger: 0.016 });
+    riseGlyphs(this.d2, t, B(49.5), { dur: 0.42, stagger: 0.018 });
+    if (t >= B(52.85)) {
+      const p = ease.inExpo(clamp((t - B(52.85)) / 0.12));
+      [this.d1, this.d2].forEach((g) => g.glyphs.forEach((gl) => (gl.opacity = 1 - p)));
+      if (p >= 1) this.d1.visible = this.d2.visible = false;
+    }
 
     // ── HUD: DO CAOS → AO CONTROLE. ──
     const c0 = B(53);
