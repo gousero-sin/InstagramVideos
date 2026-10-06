@@ -143,11 +143,11 @@ const master = path.join(cacheDir, 'master.mp4');
 await run(['-f', 'concat', '-safe', '0', '-i', list, '-c', 'copy', master]);
 const common = ['-c:v', 'libx264', '-preset', 'slow', '-profile:v', 'high', '-pix_fmt', 'yuv420p', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709', '-movflags', '+faststart', '-c:a', 'aac', '-b:a', '320k', '-ar', '48000', '-shortest'];
 const out60 = path.join(outDir, `${reelName}-${FPS}fps.mp4`);
-await run(['-i', master, '-i', audio, '-map', '0:v', '-map', '1:a', '-crf', '17', '-maxrate', '24M', '-bufsize', '48M', '-r', String(FPS), ...common, out60]);
+await run(['-i', master, '-i', audio, '-map', '0:v', '-map', '1:a', '-crf', '19.5', '-maxrate', '20M', '-bufsize', '40M', '-r', String(FPS), ...common, out60]);
 console.log('ok →', out60);
 if (FPS === 60) {
   // versão 30 fps com motion blur real (média de 2 sub-quadros = obturador de 180°)
   const out30 = path.join(outDir, `${reelName}-30fps.mp4`);
-  await run(['-i', master, '-i', audio, '-map', '0:v', '-map', '1:a', '-vf', "tmix=frames=2:weights='1 1',framestep=2", '-r', '30', '-crf', '17', '-maxrate', '20M', '-bufsize', '40M', ...common, out30]);
+  await run(['-i', master, '-i', audio, '-map', '0:v', '-map', '1:a', '-vf', "tmix=frames=2:weights='1 1',framestep=2", '-r', '30', '-crf', '18.5', '-maxrate', '16M', '-bufsize', '32M', ...common, out30]);
   console.log('ok →', out30);
 }
