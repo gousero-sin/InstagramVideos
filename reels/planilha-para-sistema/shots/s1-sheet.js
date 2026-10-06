@@ -28,7 +28,7 @@ const RIG = [
   [B(-0.25), { tx: 0.02, ty: 0, tz: -12, d: 5.2, az: 0, el: 89.5 * DEG, roll: 0.24, fov: 50 }],
   [B(1.95), { tx: 0, ty: 0, tz: -13.5, d: 31, az: 0, el: 89 * DEG, roll: 0.07, fov: 50 }, ease.outExpo],
   [B(3.3), { tx: 0, ty: 0.9, tz: WORD_Z, d: 38, az: -0.08, el: 7.5 * DEG, roll: 0.0, fov: 54 }, ease.snap],
-  [B(6), { tx: 0.1, ty: 1.0, tz: WORD_Z, d: 33, az: 0.05, el: 6.5 * DEG, roll: -0.01, fov: 54 }, ease.inOutSine],
+  [B(6), { tx: 0.1, ty: 1.0, tz: WORD_Z, d: 30.5, az: 0.11, el: 6.2 * DEG, roll: -0.025, fov: 54 }, ease.inOutSine],
   [B(8), { tx: 0.4, ty: 1.2, tz: WORD_Z, d: 23, az: 0.3, el: 5 * DEG, roll: -0.03, fov: 54 }, ease.inQuad],
   [B(11), { tx: 0, ty: 3.4, tz: WORD_Z - 2, d: 17, az: 0.62, el: 11 * DEG, roll: 0.1, fov: 56 }, ease.inOutCubic],
   [B(14), { tx: VC.x, ty: VC.y, tz: VC.z, d: 27, az: V_AZ, el: V_EL, roll: -0.05, fov: 60 }, ease.inOutCubic],
