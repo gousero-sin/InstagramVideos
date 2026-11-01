@@ -85,6 +85,53 @@ Eu transformo esse caos em um sistema feito sob medida pro seu negócio:
 
 ---
 
+## 🎥 Vídeo #2 — Teste CGI + Motion sobre vídeo real (37,5 s · 9:16 · 1080×1920)
+
+Vídeo gravado no carro (`reels/video-cgi-teste/data/original.mp4`) em que o próprio roteiro falado dá as instruções
+de edição. A transcrição (Whisper large-v3, `data/words.json`) virou a linha do tempo dos efeitos:
+
+| Fala | Tempo | O que foi feito |
+|---|---|---|
+| “Esse é um vídeo de teste para o Cloud e outras IAs” | 0,3–4,4 s | vídeo limpo (só grade leve + grão) |
+| “Aqui atrás tem uma **legenda**, com tudo que eu tô falando, **atrás da minha cabeça**” | 5,8–10,0 s | legenda cinética em 3D **atrás da cabeça**: o texto segue o topo da cabeça e a máscara (matte) da pessoa cobre as letras; a palavra falada acende em verde |
+| “Aqui tem uma **mágica**, qualquer uma que seja” | 12,3–15,8 s | orbe de plasma + círculo rúnico girando acima do dedo (rastreado), faíscas orbitando, luz colorida no ambiente |
+| “…**puxando e concentrando a mágica** e **lançando ela na tela**” | 16,8–22,6 s | a mão “puxa” a energia (rastro), partículas convergem, relâmpagos, anéis contraem, orbe cresce na palma; no gesto final o orbe é **lançado na câmera** |
+| “Aqui a gente **teleportou**, tá **no meio do espaço**” | 22,8–28 s | flash + onda de choque → **portal** que revela o espaço com salto hiperespacial; estrelas, nebulosa, planeta com anéis; a pessoa é re-iluminada pelo cenário |
+| “Teleportou com um **buraco negro** que apareceu” | 28,3–31,9 s | **buraco negro** com lente gravitacional real (traçado de raios), disco de acreção com efeito Doppler e onda no espaço-tempo; colapsa no fim |
+| “E agora, uma **Supernova** atrás de mim” | 32,5–37,5 s | estrela instável → **explosão** (flash, casca de gás, filamentos, raios, detritos, onda de refração) com a pessoa em contraluz |
+
+Extras: **sound design** sintetizado (numpy) sincronizado com cada efeito e com *ducking* sob a voz, mixado com o áudio original.
+
+**Arquivos** (`reels/video-cgi-teste/out/`): `video-cgi-teste.mp4` (com SFX), `video-cgi-teste-sem-sfx.mp4` (só a voz original) e `storyboard.jpg`.
+
+**Como foi feito** (tudo em código, sem editor de vídeo):
+
+1. `prep/matte.py` — recorte da pessoa quadro a quadro com *Robust Video Matting* (ONNX) → `matte/%05d.png`
+2. `prep/track.py` + `prep/smooth.py` — MediaPipe (mão, rosto, pose) → `data/track.json` (âncora do orbe e da legenda)
+3. `main.js` + `shaders.js` + `world.js` + `fg.js` + `captions.js` — compositor WebGL2 (Three.js): vídeo → mundo (espaço/BH/SN) → legenda → **pessoa (matte)** → luz/rim → mágica → bloom/grade
+4. `tools/vfx.mjs` — renderiza quadro a quadro em Chromium headless (SwiftShader) e monta o MP4
+5. `audio/sfx.py` — efeitos sonoros + mixagem
+
+```bash
+# pré-processamento (gera os quadros e as máscaras num diretório de trabalho, ex.: /tmp/vfx-work)
+mkdir -p /tmp/vfx-work/footage
+ffmpeg -i reels/video-cgi-teste/data/original.mp4 -vf "hqdn3d=2.5:2.5:6:6,scale=1080:1920:flags=lanczos,unsharp=5:5:0.45:5:5:0.0" -q:v 2 -start_number 1 /tmp/vfx-work/footage/%05d.jpg
+python3 -I reels/video-cgi-teste/prep/matte.py reels/video-cgi-teste/data/original.mp4 rvm_resnet50_fp32.onnx /tmp/vfx-work/matte 1.0
+python3 -I reels/video-cgi-teste/prep/track.py reels/video-cgi-teste/data/original.mp4 <pasta_dos_modelos_mediapipe> /tmp/vfx-work/track.json
+python3 -I reels/video-cgi-teste/prep/smooth.py /tmp/vfx-work/track.json reels/video-cgi-teste/data/track.json
+
+# revisar quadros avulsos / renderizar / montar
+node tools/vfx.mjs stills --work /tmp/vfx-work --out /tmp/stills --t 6.9,14.5,22.5,29.8,35
+node tools/vfx.mjs render --work /tmp/vfx-work --workers 2
+python3 -I reels/video-cgi-teste/audio/sfx.py reels/video-cgi-teste/data/original.mp4 /tmp/vfx-work/mix.wav
+node tools/vfx.mjs final --work /tmp/vfx-work --audio /tmp/vfx-work/mix.wav --out reels/video-cgi-teste/out/video-cgi-teste.mp4
+```
+
+Todos os tempos dos efeitos ficam em `reels/video-cgi-teste/timeline.js` (e as posições do cenário em `state.js`) — dá para
+ajustar qualquer momento e re-renderizar só aquele trecho (`--from/--to` em segundos + `--force`).
+
+---
+
 ## ▶️ Preview ao vivo e render
 
 ```bash
@@ -118,6 +165,7 @@ engine/                     motor reutilizável para próximos reels
   gfx/materials.js          matcaps de estúdio procedurais + material cromado
   gfx/particles.js · grid.js
   player.js                 preview com áudio/scrub + API de render quadro a quadro
+reels/video-cgi-teste/       CGI + motion sobre vídeo real (compositor WebGL, matte, tracking, SFX)
 reels/planilha-para-sistema/
   config.js                 paleta, fontes, roteiro
   shots/s1…s6               as 6 cenas + overlay

@@ -20,7 +20,7 @@ const MIME = {
   '.mp4': 'video/mp4',
 };
 
-export function createServer({ root, port = 0, onFrame } = {}) {
+export function createServer({ root, port = 0, onFrame, mounts = {} } = {}) {
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, 'http://localhost');
     if (req.method === 'POST' && url.pathname === '/frame' && onFrame) {
@@ -36,8 +36,13 @@ export function createServer({ root, port = 0, onFrame } = {}) {
       });
       return;
     }
-    let file = path.join(root, decodeURIComponent(url.pathname));
-    if (!file.startsWith(root)) return res.writeHead(403).end();
+    let base = root;
+    let rel = decodeURIComponent(url.pathname);
+    for (const [prefix, dir] of Object.entries(mounts)) {
+      if (rel.startsWith(prefix + '/')) { base = dir; rel = rel.slice(prefix.length); break; }
+    }
+    let file = path.join(base, rel);
+    if (!file.startsWith(base)) return res.writeHead(403).end();
     if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
     fs.readFile(file, (err, data) => {
       if (err) return res.writeHead(404).end('not found');
