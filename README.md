@@ -1,7 +1,52 @@
 # InstagramVideos · @gouserodev
 
-Reels em **motion 3D** feitos 100% em código: Three.js (WebGL) renderizado quadro a quadro em
+Reels feitos 100% em código — motion 3D e edição de filmagem real com CGI: Three.js (WebGL) renderizado quadro a quadro em
 Chromium headless → ffmpeg. A trilha e o sound design também foram sintetizados do zero (numpy).
+
+---
+
+## 🌊 Vídeo #2 — “Dimensão da Água” (filmagem real + CGI · 70 s · 9:16 · 4K 24 fps)
+
+![storyboard](reels/dimensao-da-agua/out/storyboard.jpg)
+
+Edição de uma gravação real (celular, câmera fixa) em que **as falas são o roteiro da edição**: cada instrução falada
+vira um efeito no momento em que é dita. Tudo composto em código (Python/numpy/OpenCV + Three.js), sem vídeo generativo —
+rosto, voz e movimentos são os originais.
+
+| Arquivo | Para quê |
+|---|---|
+| `reels/dimensao-da-agua/out/dimensao-da-agua-4k.mp4` | Master 2160×3840, 24 fps (cadência da gravação) |
+| `reels/dimensao-da-agua/out/dimensao-da-agua-1080p.mp4` | **Postar no Reels** (1080×1920) |
+| `reels/dimensao-da-agua/out/capa.jpg` · `storyboard.jpg` | Capa e storyboard |
+
+| Fala (tempo da gravação) | O que a edição faz |
+|---|---|
+| 0,4 s “Olá, esse é um vídeo gravado…” | Moldura REC + legendas cinéticas **atrás do corpo** |
+| 5,4 s “…usaremos todas as técnicas de edições possíveis” | HUD com o rastreamento real (pose 33 pts, mãos 21 pts) e o contorno do matte sendo varrido |
+| 17,8 s “Vamos para um **estúdio**…” | Onda de choque radial troca o banheiro por um estúdio 3D (Three.js), com luz de recorte no corpo |
+| 28,0 s “…consigo controlar a **água**” | Gotas convergem e formam uma esfera refrativa presa à mão rastreada |
+| 31,9 s “…passar de uma mão para a outra” | A esfera é arremessada entre as mãos (4 passes, com rastro de gotas e motion blur) |
+| 35,9 s (gesto) | As mãos se juntam acima da cabeça: a esfera cresce |
+| 38,5 s “Agora, um **portal** com essa água nessa parede” | Arremesso → respingo → portal de água em perspectiva no plano da parede, iluminando a cena |
+| 45,8 s “E eu vou entrar nesse portal” | O corpo é sugado pelo portal, a câmera mergulha junto |
+| 49,0 s “Nessa hora, você corta quando entrar no portal e volta para cá” | **Instrução de edição**: executada (corte 46,33 → 54,50 s) e não legendada |
+| 55,0 s “Aqui é a **dimensão da água**” | Fundo subaquático procedural (raios de luz, cáusticas, cardume, bolhas na frente e atrás) |
+| 60,2 s “Agora, esse foi um vídeo bem rápido…” | Cortina de bolhas devolve ao estúdio |
+| 71,6 s “Fiquem com a **vinheta**” | Vinheta @gouserodev (cena final do Reel #1 sem o CTA) |
+
+### Como foi feito (`reels/dimensao-da-agua/pipeline/`)
+
+1. `prepare.sh` — transcrição com tempo por palavra (Whisper large-v3), **rotoscopia quadro a quadro** (Robust Video Matting),
+   *clean plate* do fundo, rastreamento de pose e mãos (MediaPipe), envelope da voz, plate do estúdio (`studio/`).
+2. `edit.py` — compositor: fundo → legendas no espaço 3D (entre o fundo e a silhueta; a altura de cada bloco é escolhida
+   para passar atrás da cabeça sem perder legibilidade) → corpo (borda limpa via *unmix* com o clean plate + light wrap) →
+   água/portal/bolhas → câmera virtual, aberração cromática nos impactos, grade, vinheta e grão.
+   Cada quadro é função fechada do tempo, então renderiza em paralelo: `python3 edit.py --src … --work … --scale 2 --out main4k.mp4`
+   (`--scale 1` = preview 1080p; `--stills 17.9,40` = quadros de revisão).
+3. `audio.py` — voz original (limpeza leve) + trilha 96 BPM e sound design sintetizados, com ducking sob a fala.
+4. `assemble.sh` — junta composição + vinheta + áudio e exporta os masters (-14 LUFS).
+
+A gravação original não fica no repositório (use `prepare.sh` com o seu arquivo).
 
 ---
 

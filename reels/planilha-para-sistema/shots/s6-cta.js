@@ -126,7 +126,8 @@ export class ShotCTA extends Shot {
     this.ripple = new THREE.Mesh(new THREE.RingGeometry(0.9, 1, 64), new THREE.MeshBasicMaterial({ color: new THREE.Color(C.green), transparent: true }));
     const bb = bubbleTexture('SISTEMA');
     this.bubble = new THREE.Mesh(new THREE.PlaneGeometry(bb.w, bb.h), makeTextMaterial(bb.tex));
-    this.hud.add(this.k1, this.k2, this.btn, this.sub, this.ripple, this.bubble, this.cursor);
+    // ?vinheta=1 → só a assinatura (marca + @), sem o CTA do reel — usada como vinheta em outros vídeos
+    if (!new URLSearchParams(location.search).has('vinheta')) this.hud.add(this.k1, this.k2, this.btn, this.sub, this.ripple, this.bubble, this.cursor);
   }
 
   update(t, lt, fx) {
